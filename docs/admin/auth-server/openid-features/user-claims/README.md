@@ -9,28 +9,28 @@ tags:
 ---
 
 !!! Note
-    Janssen Server uses the terms `claims`, `user claims` and `attributes` 
-    interchangeably. They have the same meaning.
+Janssen Server uses the terms `claims`, `user claims`, and `attributes`
+interchangeably. They have the same meaning.
 
 # User Claims
 
-Claim is a piece of information asserted about an Entity. User claims refer to 
-pieces of information about the authenticated user, such as their name, 
-email address, date of birth, and more. These claims provide the RP with 
-specific attributes or characteristics associated with the user. The claims 
-are issued by the IDP after successful authentication and are included in the 
-ID Token (which is a JSON Web Token (JWT) that contains user-related 
-information) and are also available through the `/userinfo` endpoint. 
+A claim is a piece of information asserted about an Entity. User claims refer to
+pieces of information about the authenticated user, such as their name,
+email address, date of birth, and more. These claims provide the RP with
+specific attributes or characteristics associated with the user. The claims
+are issued by the IDP after successful authentication and are included in the
+ID Token (which is a JSON Web Token (JWT) that contains user-related
+information) and are also available through the `/userinfo` endpoint.
 
 ## Types of User Claims
 
-### Standard Claims 
+### Standard Claims
 
-The Janssen Server includes all standard claims defined 
-in [OpenID Connect specifications](https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims) as built-in claims. 
-These claims are pre-defined and available for use after installation. 
+The Janssen Server includes all standard claims defined
+in [OpenID Connect specifications](https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims) as built-in claims.
+These claims are pre-defined and available for use after installation.
 
-The built-in user claims in the Janssen Server are listed in below table:
+The built-in user claims in the Janssen Server are listed in the table below:
 
 | Display Name                          | Claim Name                               | Description                                                                                                                                                                              |
 |---------------------------------------|------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -67,9 +67,27 @@ The built-in user claims in the Janssen Server are listed in below table:
 | Organization                          | o                                        | Organization                                                                                                                                                                             |
 | Picture URL                           | picture                                  | User's picture url                                                                                                                                                                       | 
 
+
 ### Custom Claims
 
-In addition to standard claims, custom claims are also allowed to be defined 
-by the IDP. These claims provide flexibility to include application-specific 
-user attributes that are not covered by the standard claims. Custom claims 
+In addition to standard claims, custom claims are also allowed to be defined
+by the IDP. These claims provide flexibility to include application-specific
+user attributes that are not covered by the standard claims. Custom claims
 can provide additional context or information needed by the RP.
+
+## Inactive Claims
+
+Each claim in the Janssen Server has an active or inactive state. An administrator can
+change the claim status to `inactive` to stop the Janssen Server from using that
+claim.
+
+The response from OpenId Well-known endpoint 
+`https://<jans-host-name>/jans-auth/.well-known/openid-configuration` will only
+list claims in `active` status. To see the full list of claims with `active` and
+`inactive` status, use the TUI configuration tools as mentioned in 
+[Configuring Claims](#configuring-claims) section.
+
+## Configuring Claims
+
+Refer the [configuration guide](../../../config-guide/attribute-configuration.md)
+for instructions about how to configure claims/attributes.

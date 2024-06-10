@@ -92,10 +92,10 @@ list claims in `active` status. To see the full list of claims with `active` and
 Refer the [configuration guide](../../../config-guide/attribute-configuration.md)
 for instructions about how to configure claims/attributes.
 
-## Claims Managed by Auth Server
+## Subject Identifier by Auth Server
 
-There are certain claims that are introduced by
-the Janssen Server. For example, tokens may have `sub` claim which
-is introduced by the server and can not be managed by the administrator.
-Such claims are not listed as part of TUI screens or OpenId `.well-known` 
-endpoint response.
+The Janssen Server attaches a subject identifier with each end-user entity that
+is subject to authentication. This identifier may be received as part of 
+the response from the server in certain cases. In the response, this identifier 
+is represented by the `sub` claim. To know more refer to the 
+[subject identifier](./../subject-identifiers.md).

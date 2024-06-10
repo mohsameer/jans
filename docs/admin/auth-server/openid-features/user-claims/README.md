@@ -95,7 +95,7 @@ for instructions about how to configure claims/attributes.
 ## Claims Managed by Auth Server
 
 There are certain claims that are introduced by
-the Janssen Server. For example, tokens may have `sub` claim in response which
+the Janssen Server. For example, tokens may have `sub` claim which
 is introduced by the server and can not be managed by the administrator.
 Such claims are not listed as part of TUI screens or OpenId `.well-known` 
 endpoint response.

@@ -228,9 +228,7 @@ nav:
       - CIBA: admin/auth-server/openid-features/ciba.md
       - JARM: admin/auth-server/openid-features/jarm.md
       - Native SSO: admin/auth-server/openid-features/native-sso.md
-      - User Claims:
-        - admin/auth-server/openid-features/user-claims/README.md
-        - Adding Custom Claims: admin/auth-server/openid-features/user-claims/custom-claims.md
+      - User Claims: admin/auth-server/openid-features/user-claims/README.md
       - Logout:
         - admin/auth-server/openid-features/logout/README.md
         - Front Channel: admin/auth-server/openid-features/logout/front-channel.md

@@ -122,7 +122,6 @@ nav:
       - REST API:
         - admin/config-guide/config-tools/config-api/README.md
         - Settings: admin/config-guide/config-tools/config-api/config.md
-        - Attributes: admin/config-guide/config-tools/config-api/attribute.md
         - Security: admin/config-guide/config-tools/config-api/security.md
         - Logs: admin/config-guide/config-tools/config-api/logs.md
         - Monitoring: admin/config-guide/config-tools/config-api/monitoring.md

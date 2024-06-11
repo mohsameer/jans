@@ -7,11 +7,11 @@ tags:
   - user claims
 ---
 
-!!! Note
-  Janssen Server uses the terms `claims`, `user claims`, and `attributes`
-  interchangeably. They have the same meaning.
+# Claims Configuration
 
-# Claims
+!!! Note
+    Janssen Server uses the terms `claims`, `user claims`, and `attributes`
+    interchangeably. They have the same meaning.
 
 The Janssen Server provides multiple configuration tools to perform these
 tasks.

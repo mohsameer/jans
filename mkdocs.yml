@@ -128,7 +128,7 @@ nav:
         - Plugins: admin/config-guide/config-tools/config-api/plugins.md
       - CURL: admin/config-guide/config-tools/curl-guide.md
     - Agama Project Configuration: admin/config-guide/agama-project-configuration.md
-    - Attribute: admin/config-guide/attribute-configuration.md
+    - Claims Configuration: admin/config-guide/claims-configuration.md
     - Default Authentication: admin/config-guide/default-authentication-method-config.md
     - Cache Configuration: admin/config-guide/cache-configuration.md
     - Auth Server Configuration: admin/config-guide/jans-authorization-server-config.md

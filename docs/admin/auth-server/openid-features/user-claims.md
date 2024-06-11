@@ -9,8 +9,8 @@ tags:
 ---
 
 !!! Note
-Janssen Server uses the terms `claims`, `user claims`, and `attributes`
-interchangeably. They have the same meaning.
+    Janssen Server uses the terms `claims`, `user claims`, and `attributes`
+    interchangeably. They have the same meaning.
 
 # User Claims
 
@@ -89,7 +89,7 @@ list claims in `active` status. To see the full list of claims with `active` and
 
 ## Configuring User Claims
 
-Refer the [configuration guide](../../../config-guide/attribute-configuration.md)
+Refer the [configuration guide](../../config-guide/attribute-configuration.md)
 for instructions about how to configure claims/attributes.
 
 ## Subject Identifier by Auth Server
@@ -98,4 +98,4 @@ The Janssen Server attaches a subject identifier with each end-user entity that
 is subject to authentication. This identifier may be received as part of 
 the response from the server in certain cases. In the response, this identifier 
 is represented by the `sub` claim. To know more refer to the 
-[subject identifier](./../subject-identifiers.md).
+[subject identifier](subject-identifiers.md).

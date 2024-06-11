@@ -3,9 +3,15 @@ tags:
   - administration
   - configuration
   - attributes
+  - claims
+  - user claims
 ---
 
-# Attribute
+!!! Note
+  Janssen Server uses the terms `claims`, `user claims`, and `attributes`
+  interchangeably. They have the same meaning.
+
+# Claims
 
 The Janssen Server provides multiple configuration tools to perform these
 tasks.

@@ -7,6 +7,34 @@ tags:
 
 # Attribute
 
+The Janssen Server provides multiple configuration tools to perform these
+tasks.
+
+=== "Use Command-line"
+
+    Use the command line to perform actions from the terminal. Learn how to 
+    use Jans CLI [here](./config-tools/jans-cli/README.md) or jump straight to 
+    the [configuration steps](#using-command-line)
+
+=== "Use Text-based UI"
+
+    Use a fully functional text-based user interface from the terminal. 
+    Learn how to use Jans Text-based UI (TUI) 
+    [here](./config-tools/jans-tui/README.md) or jump straight to the
+    [configuration steps](#using-text-based-ui)
+
+=== "Use REST API"
+
+    Use REST API for programmatic access or invoke via tools like CURL or 
+    Postman. Learn how to use Janssen Server Config API 
+    [here](./config-tools/config-api/README.md) or Jump straight to the
+    [configuration steps](#using-configuration-rest-api)
+
+
+
+##  Using Command Line
+
+
 First thing, let's get the information for `Attribute`:
 ```shell
 /opt/jans/jans-cli/config-cli.py --info Attribute
@@ -49,18 +77,7 @@ To get sample schema type /opt/jans/jans-cli/config-cli.py --schema <schma>, for
 
 We have discussed here about each of this operations ID with few examples to understand how these really works.
 
-Table of Contents
-=================
-
-* [Attribute](#attribute)
-  * [Get Attributes](#get-attributes)
-  * [Creating an Attribute](#creating-an-attribute)
-  * [Updating an Attribute](#updating-an-attribute)
-  * [Get Attribute by inum](#get-attribute-by-inum)
-  * [Delete Attributes](#delete-attributes)
-  * [Patch Attributes](#patch-attributes)
-
-## Get Attributes
+### Get Attributes
 
 > Prerequisite: Know how to use the Janssen CLI in [command-line mode](config-tools/jans-cli/README.md)
 
@@ -220,7 +237,7 @@ Please wait while retrieving data ...
 }
 ```
 
-## Creating an Attribute
+### Creating an Attribute
 
 To create SSO for certain applications, you may need to add custom attributes to your Janssen Server. Custom attributes can be added by using this operation-ID. It has a schema file where it's defined: the properties it needs to be filled to create a new custom attribute.
 
@@ -339,7 +356,7 @@ It will create a new attribute into the Attribute list with updated `inum & dn`:
 }
 ```
 
-## Updating an Attribute
+### Updating an Attribute
 
 This operation-id can be used to update an existing attribute information. The Janssen Server administrator can make changes to attributes, such as changing their status to `active/inactive` by using this operation-ID. Let's look at the schema:
 
@@ -417,7 +434,7 @@ Server Response:
 
 It just replace the previous value with new one. 
 
-## Get Attribute by `inum`
+### Get Attribute by `inum`
 
 As we know, There are a lot of attributes available in the Janssen Server including custom attributes as well. You may want to know details information for a single attribute uniquely identified by `inum`.
 Getting an attribute information by using its `inum` is pretty simple.
@@ -470,7 +487,7 @@ Getting access token for scope https://jans.io/oauth/config/attributes.readonly
 }
 ```
 
-## Delete Attributes
+### Delete Attributes
 
 For any reason, If it needs to delete any attribute, you can do that simply using its `inum` value. See below example, just change the `inum` value with one that you want to delete.
 
@@ -478,7 +495,7 @@ For any reason, If it needs to delete any attribute, you can do that simply usin
 /opt/jans/jans-cli/config-cli.py --operation-id delete-attributes-by-inum --url-suffix inum:b691f2ab-a7db-4725-b85b-9961575b441f
 ```
 
-## Patch Attributes
+### Patch Attributes
 
 This operation can also used for updating an existing attribute by using its `inum` value.
 
@@ -601,3 +618,127 @@ Server Response:
 ```
 
 As you see, there are two changes.
+
+##  Using Text-based UI
+
+### Claims Configuration
+
+### Create Custom Claims
+
+Custom claims provide the flexibility to include application-specific or 
+user-specific information in the authentication process.Custom claims serve to 
+enrich the information available to the relying party (RP), which is the 
+application or service that relies on the identity provided by the OIDC 
+provider. While standard claims provide basic user information, custom claims 
+allow for the inclusion of domain-specific attributes or application-specific 
+data that might be required for user personalization, authorization, or other 
+business logic. User claims should be unique and non-null or empty.
+
+##### Step 1: Create a custom attribute
+
+Create a new custom attribute using
+[Test User Interface](../../../config-guide/config-tools/jans-tui) or
+[CURL commands](../../../config-guide/config-tools/jans-cli/README.md),
+superb tools provided in Janssen. The attribute name should be the claim name.
+
+![](../../../../assets/image-tui-add-attribute.png)
+
+##### Step 2: Make entry of the claim in the Persistance
+
+- LDAP (OpenDJ)
+
+    - In OpenDJ, add custom attributes in `/opt/opendj/config/schema/77-customAttributes.ldif`. In the below example, `newClaim` is our custom attribute.
+
+    ```
+      dn: cn=schema
+      objectClass: top
+      objectClass: ldapSubentry
+      objectClass: subschema
+      cn: schema
+      attributeTypes: ( 1.3.6.1.4.1.48710.1.3.297 NAME 'newClaim'
+      DESC 'New claim'
+      EQUALITY caseIgnoreMatch
+      SUBSTR caseIgnoreSubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+      X-ORIGIN 'Jans created attribute' )
+    ```
+
+    - Add custom attribute to the jansCustomPerson objectClasses.
+
+    ```
+    objectClasses: ( 1.3.6.1.4.1.48710.1.4.101 NAME 'jansCustomPerson'
+    SUP ( top )
+    AUXILIARY
+    MAY ( newClaim $ telephoneNumber $ mobile $ carLicense $ facsimileTelephoneNumber $ departmentNumber $ employeeType $ cn $ sn $ st $ uid $ givenName $ middleName $ nickname $ manager $ street $ postOfficeBox $ employeeNumber $ preferredDeliveryMethod $ roomNumber $ secretary $ userPassword $ homePostalAddress $ l $ postalCode $ description $ title $ jansStatus $ memberOf $ displayName $ mail $ emailVerified $ jansAdminUIRole )
+    X-ORIGIN 'Jans - Custom persom objectclass' )
+    ```
+
+    The complete 77-customAttributes.ldif will look like this:
+
+    ```
+    dn: cn=schema
+    objectClass: top
+    objectClass: ldapSubentry
+    objectClass: subschema
+    cn: schema
+    attributeTypes: ( 1.3.6.1.4.1.48710.1.3.297 NAME 'newClaim'
+      DESC 'New claim'
+      EQUALITY caseIgnoreMatch
+      SUBSTR caseIgnoreSubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+      X-ORIGIN 'Jans created attribute' )
+    objectClasses: ( 1.3.6.1.4.1.48710.1.4.101 NAME 'jansCustomPerson'
+      SUP ( top )
+      AUXILIARY
+      MAY ( newClaim $ telephoneNumber $ mobile $ carLicense $ facsimileTelephoneNumber $ departmentNumber $ employeeType $ cn $ sn $ st $ uid $ givenName $ middleName $ nickname $ manager $ street $ postOfficeBox $ employeeNumber $ preferredDeliveryMethod $ roomNumber $ secretary $ userPassword $ homePostalAddress $ l $ postalCode $ description $ title $ jansStatus $ memberOf $ displayName $ mail $ emailVerified $ jansAdminUIRole )
+      X-ORIGIN 'Jans - Custom persom objectclass' )
+  
+    ```
+  
+  !!!warning
+  Spacing is extremely important in the customs attributes file above. There must be 2 spaces before and 1 after every entry (i.e. DESC), or your custom schema will fail to load properly because of a validation error. You cannot have line spaces between `attributeTypes:` or `objectClasses:`. This will cause failure in schema. Please check the error logs in /opt/opendj/logs/errors if you are experiencing issues with adding custom schema. This will help guide you on where there may be syntax errors.
+
+    - Restart `opendj` service.
+
+    [Restart](../../../../admin/vm-ops/restarting-services.md#reload) the `opendj` service.
+    
+    That will create the custom user claim in the local LDAP server.
+    
+    Once the user claim is added, it can be used in user management.
+    
+    ![](../../../../assets/image-tui-user-claim.png)
+
+
+#### Step 2: Make entry of the claim in MySQL Schema
+
+- Add a column to table `jansPerson` in MySQL. Command will be `ALTER TABLE jansPerson ADD COLUMN <claimName> <dataType>`;
+
+**Example**
+```
+mysql> ALTER TABLE jansPerson ADD COLUMN newClaim VARCHAR(100);
+```
+
+**Choose dataType according to the following table**
+
+|TUI dataType|SQL dataType|
+|---|---|
+|Text|VARCHAR() string value to be kept, SIZE is an integer for max string size|
+|Numeric|INT|
+|Boolean|SMALLINT|
+|Binary|BINARY|
+|Certificate|TEXT|
+|Date|DATETIME(3)|
+|Numeric|INT|
+|Multivalued|JSON|
+
+![](../../../../assets/image-tui-attribute-datatype.png)
+
+!!!warning
+If the attribute is Multivalued, dataType should be JSON regardless of what you will choose for Type in Janssen TUI.
+
+The above steps will create the custom user claim in the MySQL persistence.
+
+
+Once the user claim is added, it can be used in user management.
+
+![](../../../../assets/image-tui-user-claim.png)

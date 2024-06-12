@@ -42,14 +42,14 @@ tasks.
 
 
 First thing, let's get the information for `Attribute`:
-```shell
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py --info Attribute
 ```
 In return, we get a list of Operations ID as below:
 
-```text
+```text title="Output"
 Operation ID: get-attributes
-  Description: Gets a list of Gluu attributes.
+  Description: Gets a list of Jans attributes.
   Parameters:
   limit: Search size - max size of the results to return [integer]
   pattern: Search pattern [string]
@@ -78,93 +78,117 @@ Operation ID: patch-attributes-by-inum
   inum: Attribute Id [string]
   Schema: Array of PatchRequest
 
-To get sample schema type /opt/jans/jans-cli/config-cli.py --schema <schma>, for example /opt/jans/jans-cli/config-cli.py --schema PatchRequest
+To get sample schema type /opt/jans/jans-cli/config-cli.py --schema <schema>, for example /opt/jans/jans-cli/config-cli.py --schema PatchRequest
 ```
 
-We have discussed here about each of this operations ID with few examples to understand how these really works.
+Let's discuss each of these operations in detail.
 
 ### Get Attributes
 
-> Prerequisite: Know how to use the Janssen CLI in [command-line mode](config-tools/jans-cli/README.md)
+As we know, Attributes(or claims) are individual pieces of user data, like `uid`
+or `email`, that are required by applications in order to identify a user and 
+grant access to protect resources. The user attributes that are available in 
+your Janssen Server can be found by using this operation-ID. 
 
-As we know, Attributes are individual pieces of user data, like `uid` or `email`, that are required by applications in order to identify a user and grant access to protect resources. The user attributes that are available in your Janssen Server can be found by using this operation-ID. If we look at the description below:
-
-```text
-Operation ID: get-attributes
-  Description: Gets a list of Gluu attributes.
-  Parameters:
-  limit: Search size - max size of the results to return [integer]
-  pattern: Search pattern [string]
-  status: Status of the attribute [string]
-  startIndex: The 1-based index of the first query result [integer]
-  sortBy: Attribute whose value will be used to order the returned response [string]
-  sortOrder: Order in which the sortBy param is applied. Allowed values are "ascending" and "descending" [string]
-  fieldValuePair: Field and value pair for seraching [string]
-```
-
-To get all the attributes without any arguments, run the following command:
-```commandline
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py --operation-id get-attributes
 ```
 
-To get attributes with passing the arguments, let's retrieve randomly limit:5:
+Response to this command is a listing of all the currently configured 
+attributes(claims) in the Janssen Server. Sample output below shows two 
+of them. 
 
-```commandline
-/opt/jans/jans-cli/config-cli.py --operation-id get-attributes --endpoint-args limit:1
-```
-
-It will return only one attribute details randomly:
-```text
-Getting access token for scope https://jans.io/oauth/config/attributes.readonly
-Calling with params limit=1
+```bash title="Sample Output"
+Please wait while retrieving data ...
 {
   "start": 0,
   "totalEntriesCount": 71,
-  "entriesCount": 1,
+  "entriesCount": 50,
   "entries": [
     {
-      "dn": "inum=29DA,ou=attributes,o=jans",
+      "dn": "inum=002A,ou=attributes,o=jans",
       "selected": false,
-      "inum": "29DA",
-      "name": "inum",
-      "displayName": "Inum",
-      "description": "XRI i-number, persistent non-reassignable identifier",
-      "origin": "jansPerson",
+      "inum": "002A",
+      "name": "eduPersonScopedAffiliation",
+      "displayName": "eduPersonScopedAffiliation",
+      "description": "Specifies the person's affiliation within a particular security domainin broad categories such as student, faculty, staff, alum, etc. Thevalues consistof a left and right component separated by an \"@\" sign. The left component is one ofthe values from the eduPersonAffiliation controlledvocabulary.This right-hand side syntaxof eduPersonScopedAffiliation intentionally matches that used for the right-hand sidevalues for eduPersonPrincipalName since both identify a security domain. Multiple \"@\" signsare not recommended, but in any case, the first occurrence of the \"@\" sign starting from theleft is to be taken as the delimiter between components. Thus, user identifier is to the left,security domain to the right of the first \"@\".",
+      "origin": "eduPerson",
       "dataType": "string",
       "editType": [
         "admin"
       ],
       "viewType": [
-        "user",
         "admin"
       ],
-      "claimName": "inum",
-      "status": "active",
-      "saml1Uri": "urn:mace:dir:attribute-def:inum",
-      "saml2Uri": "urn:oid:1.3.6.1.4.1.48710.1.3.117",
-      "urn": "urn:jans:dir:attribute-def:inum",
+      "claimName": "edu_person_scoped_affiliation",
+      "status": "inactive",
+      "saml1Uri": "urn:mace:dir:attribute-def:eduPersonScopedAffiliation",
+      "saml2Uri": "urn:oid:1.3.6.1.4.1.5923.1.1.1.9",
+      "urn": "oid:1.3.6.1.4.1.5923.1.1.1.9",
       "oxMultiValuedAttribute": false,
       "custom": false,
+      "requred": false,
       "adminCanAccess": true,
       "adminCanView": true,
       "adminCanEdit": true,
-      "userCanAccess": true,
-      "userCanView": true,
-      "userCanEdit": false,
+      "userCanAccess": false,
+      "userCanView": false,
       "whitePagesCanView": false,
-      "baseDn": "inum=29DA,ou=attributes,o=jans"
-    }
-  ]
-}
-
+      "userCanEdit": false,
+      "baseDn": "inum=002A,ou=attributes,o=jans"
+    },
+    {
+      "dn": "inum=0247,ou=attributes,o=jans",
+      "selected": false,
+      "inum": "0247",
+      "name": "eduPersonPrimaryOrgUnitDN",
+      "displayName": "eduPersonPrimaryOrgUnitDN",
+      "description": "The distinguished name (DN) of the directory entry representingthe person's primary Organizational Unit(s).",
+      "origin": "eduPerson",
+      "dataType": "string",
+      "editType": [
+        "admin"
+      ],
+      "viewType": [
+        "admin"
+      ],
+      "claimName": "edu_person_primary_org_unit_dn",
+      "status": "inactive",
+      "saml1Uri": "urn:mace:dir:attribute-def:eduPersonPrimaryOrgUnitDN",
+      "saml2Uri": "urn:oid:1.3.6.1.4.1.5923.1.1.1.8",
+      "urn": "oid:1.3.6.1.4.1.5923.1.1.1.8",
+      "oxMultiValuedAttribute": false,
+      "custom": false,
+      "requred": false,
+      "adminCanAccess": true,
+      "adminCanView": true,
+      "adminCanEdit": true,
+      "userCanAccess": false,
+      "userCanView": false,
+      "whitePagesCanView": false,
+      "userCanEdit": false,
+      "baseDn": "inum=0247,ou=attributes,o=jans"
+    },
 ```
 
-To get attributes with `pattern & status`:
+User the endpoint arguments to limit and filter the output of the
+`get-attributes` operation. The command below will return only one attribute
+from the list.
 
-```commandline
-/opt/jans/jans-cli/config-cli.py --operation-id get-attributes --endpoint-args limit:3,pattern:profile,status:ACTIVE
+```bash title="Command"
+/opt/jans/jans-cli/config-cli.py --operation-id get-attributes \
+ --endpoint-args limit:1
 ```
-In return, we get a list of attribute that are matched with the given `pattern` and `status`:
+
+Attributes(claims) can also be filtered by `pattern` or `status` as shown
+in the command below.
+
+```bash title="Command"
+/opt/jans/jans-cli/config-cli.py --operation-id get-attributes \
+--endpoint-args limit:3,pattern:profile,status:ACTIVE
+```
+In return, we get a list of attribute where `displayName` matches with 
+`profile` and `status` is `ACTIVE`:
 
 ```text
 Please wait while retrieving data ...
@@ -243,16 +267,22 @@ Please wait while retrieving data ...
 }
 ```
 
+The complete list of parameters that can be used with this operation are 
+given in the output of `--info` switch above.
+
 ### Creating an Attribute
 
-To create SSO for certain applications, you may need to add custom attributes to your Janssen Server. Custom attributes can be added by using this operation-ID. It has a schema file where it's defined: the properties it needs to be filled to create a new custom attribute.
+Custom attributes(claims) can be created using `post-attributes` operation.
+As shown in the output of the `--info` switch below, this operation has a 
+schema that helps defining the new attribute.
 
 ```text
 Operation ID: post-attributes
   Description: Adds a new attribute
   Schema: JansAttribute
 ```
-Before adding a new attribute, let's get sample `schema`:
+
+First step in creating a custom attribute is to get the schema. 
 ```commandline
 /opt/jans/jans-cli/config-cli.py --schema JansAttribute > /tmp/attribute.json
 ```  
@@ -313,15 +343,12 @@ It will return as below:
   "baseDn": "string"
 }
 ```
-Modify it to update attribute `name`, `display name`, `view type`:
-```text
-nano /tmp/attribute.json
-```
+To update values in the above schema, use the [schema definition](https://gluu.org/swagger-ui/?url=https://raw.githubusercontent.com/JanssenProject/jans/vreplace-janssen-version/jans-config-api/docs/jans-config-api-swagger.yaml#/Attribute/post-attributes) 
+in the Swagger specification of the configuration-api and update the 
+`/tmp/attribute.json` file with values for the new attribute. After updating
+the file, use it with `post-attribute` operation as shown below:
 
-![post-attribute.png](../../assets/image-cl-post-attribute-03042021.png)
-
-Now, let's add this attribute using `post-attributes`:
-```commandline
+```bash
 /opt/jans/jans-cli/config-cli.py --operation-id post-attributes --data /tmp/attribute.json
 ```
 It will create a new attribute into the Attribute list with updated `inum & dn`:
@@ -640,18 +667,9 @@ allow for the inclusion of domain-specific attributes or application-specific
 data that might be required for user personalization, authorization, or other 
 business logic. User claims should be unique and non-null or empty.
 
-##### Step 1: Create a custom attribute
+## Updating Persistence For Adding New Claim
 
-Create a new custom attribute using
-[Test User Interface](../../../config-guide/config-tools/jans-tui) or
-[CURL commands](../../../config-guide/config-tools/jans-cli/README.md),
-superb tools provided in Janssen. The attribute name should be the claim name.
-
-![](../../../../assets/image-tui-add-attribute.png)
-
-##### Step 2: Make entry of the claim in the Persistance
-
-- LDAP (OpenDJ)
+### LDAP
 
     - In OpenDJ, add custom attributes in `/opt/opendj/config/schema/77-customAttributes.ldif`. In the below example, `newClaim` is our custom attribute.
 
@@ -715,7 +733,7 @@ superb tools provided in Janssen. The attribute name should be the claim name.
     ![](../../../../assets/image-tui-user-claim.png)
 
 
-#### Step 2: Make entry of the claim in MySQL Schema
+### MySQL
 
 - Add a column to table `jansPerson` in MySQL. Command will be `ALTER TABLE jansPerson ADD COLUMN <claimName> <dataType>`;
 
@@ -744,7 +762,9 @@ If the attribute is Multivalued, dataType should be JSON regardless of what you 
 
 The above steps will create the custom user claim in the MySQL persistence.
 
+### PostGres
 
 Once the user claim is added, it can be used in user management.
 
 ![](../../../../assets/image-tui-user-claim.png)
+

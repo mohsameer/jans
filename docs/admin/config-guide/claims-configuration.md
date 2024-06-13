@@ -282,16 +282,24 @@ Operation ID: post-attributes
   Schema: JansAttribute
 ```
 
-First step in creating a custom attribute is to get the schema. 
+Creating a new attribute(claim) is a two step process.
+1. Update the persistence store
+2. Create the new attribute with `post-attributes` operation
+
+To update the persistence store, follow the instructions 
+[here](#updating-persistence-for-adding-new-claim). Then continue to follow the
+instructions below to create the new attribute with `post-attributes` 
+operation.
+
+Let's get the schema required to create the new attribute. 
 ```commandline
 /opt/jans/jans-cli/config-cli.py --schema JansAttribute > /tmp/attribute.json
 ```  
-It will return as below:
+The command above will store the schema in `/tmp/attribute.json` file as below:
 
 ```json
 {
   "dn": "string",
-  "selected": false,
   "inum": "string",
   "sourceAttribute": "string",
   "nameIdType": "string",
@@ -299,26 +307,27 @@ It will return as below:
   "displayName": "string",
   "description": "string",
   "origin": "string",
-  "dataType": "certificate",
+  "dataType": "json",
   "editType": [
     "manager"
   ],
   "viewType": [
-    "user"
+    "owner"
   ],
   "usageType": [
     "openid"
   ],
   "claimName": "string",
   "seeAlso": "string",
-  "status": "inactive",
+  "status": "expired",
   "saml1Uri": "string",
   "saml2Uri": "string",
   "urn": "string",
   "scimCustomAttr": true,
   "oxMultiValuedAttribute": true,
   "jansHideOnDiscovery": true,
-  "custom": false,
+  "custom": true,
+  "requred": true,
   "attributeValidation": {
     "minLength": {
       "type": "integer",
@@ -333,23 +342,26 @@ It will return as below:
     }
   },
   "tooltip": "string",
-  "whitePagesCanView": false,
-  "adminCanView": true,
-  "userCanAccess": false,
+  "selected": false,
   "userCanView": true,
-  "adminCanAccess": false,
-  "adminCanEdit": false,
+  "adminCanView": false,
+  "adminCanEdit": true,
   "userCanEdit": true,
+  "adminCanAccess": false,
+  "userCanAccess": true,
+  "whitePagesCanView": true,
   "baseDn": "string"
 }
 ```
-To update values in the above schema, use the [schema definition](https://gluu.org/swagger-ui/?url=https://raw.githubusercontent.com/JanssenProject/jans/vreplace-janssen-version/jans-config-api/docs/jans-config-api-swagger.yaml#/Attribute/post-attributes) 
-in the Swagger specification of the configuration-api and update the 
-`/tmp/attribute.json` file with values for the new attribute. After updating
+Now update the values as per your need in the file. 
+For more information on what are the permissible and valid values 
+for each key, refer the [schema definition](https://gluu.org/swagger-ui/?url=https://raw.githubusercontent.com/JanssenProject/jans/vreplace-janssen-version/jans-config-api/docs/jans-config-api-swagger.yaml#/Attribute/post-attributes) 
+in the Swagger specification of the configuration-api. After updating
 the file, use it with `post-attribute` operation as shown below:
 
 ```bash
-/opt/jans/jans-cli/config-cli.py --operation-id post-attributes --data /tmp/attribute.json
+/opt/jans/jans-cli/config-cli.py --operation-id post-attributes \
+--data /tmp/attribute.json
 ```
 It will create a new attribute into the Attribute list with updated `inum & dn`:
 
@@ -669,6 +681,29 @@ business logic. User claims should be unique and non-null or empty.
 
 ## Updating Persistence For Adding New Claim
 
+### PostgreSQL
+
+In order to add a new claim, the database schema need to be altered to add
+a column in the `jansPerson` table. 
+
+Refer to the 
+[operations guide](../reference/database/pgsql-ops.md#establish-connection-to-jans-postgresql-server) for corresponding persistence type to understand
+how to connect to the PostgreSQL persistence.
+
+If the new claim is `mynewclaim` then run
+the SQL below to add a new column.
+
+```text
+ALTER TABLE "jansPerson" ADD COLUMN mynewclaim integer;
+```
+
+You can also specify additional constraints, defaults, or other attributes 
+for the new column as needed. Here's an example with a default value
+
+```text
+ALTER TABLE "jansPerson" ADD COLUMN mynewclaim VARCHAR DEFAULT 'Basic';
+```
+
 ### LDAP
 
     - In OpenDJ, add custom attributes in `/opt/opendj/config/schema/77-customAttributes.ldif`. In the below example, `newClaim` is our custom attribute.
@@ -735,7 +770,8 @@ business logic. User claims should be unique and non-null or empty.
 
 ### MySQL
 
-- Add a column to table `jansPerson` in MySQL. Command will be `ALTER TABLE jansPerson ADD COLUMN <claimName> <dataType>`;
+- Add a column to table `jansPerson` in MySQL. Command will 
+be `ALTER TABLE jansPerson ADD COLUMN <claimName> <dataType>`;
 
 **Example**
 ```
@@ -757,8 +793,9 @@ mysql> ALTER TABLE jansPerson ADD COLUMN newClaim VARCHAR(100);
 
 ![](../../../../assets/image-tui-attribute-datatype.png)
 
-!!!warning
-If the attribute is Multivalued, dataType should be JSON regardless of what you will choose for Type in Janssen TUI.
+!!! Note
+    If the attribute is Multivalued, dataType should be JSON regardless of what 
+you will choose for Type in Janssen TUI.
 
 The above steps will create the custom user claim in the MySQL persistence.
 

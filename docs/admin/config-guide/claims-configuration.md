@@ -697,8 +697,8 @@ the SQL below to add a new column.
 ALTER TABLE "jansPerson" ADD COLUMN mynewclaim integer;
 ```
 
-You can also specify additional constraints, defaults, or other attributes 
-for the new column as needed. Here's an example with a default value
+It is also possible to specify additional constraints, defaults, or other 
+attributes for the new column as needed. Here's an example with a default value.
 
 ```text
 ALTER TABLE "jansPerson" ADD COLUMN mynewclaim VARCHAR DEFAULT 'Basic';

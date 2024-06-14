@@ -282,16 +282,28 @@ Operation ID: post-attributes
   Schema: JansAttribute
 ```
 
-Creating a new attribute(claim) is a two step process.
-1. Update the persistence store
-2. Create the new attribute with `post-attributes` operation
+`JansAttribute` schema is a JSON structure that lists all the keys that can 
+be used to describe a claim. See the schema JSON using the command below: 
 
-To update the persistence store, follow the instructions 
-[here](#updating-persistence-for-adding-new-claim). Then continue to follow the
+```commandline
+/opt/jans/jans-cli/config-cli.py --schema JansAttribute
+```  
+
+Before creating the new attribute with `post-attributes` operation, complete
+the two steps mentioned below. To complete these two steps let's use the
+attribute name as `testAttribute` with datatype as `numeric`:
+
+1. Update the persistence store using [these instructions](#updating-persistence-for-adding-new-claim)
+1. Restart `jans-auth.service` and `jans-config-api.service` service in this 
+order using [this command](https://docs.jans.io/head/admin/vm-ops/restarting-services/#restart)
+
+Once the step `1` and `2` listed above have been successfully executed, 
+then continue to follow the
 instructions below to create the new attribute with `post-attributes` 
 operation.
 
-Let's get the schema required to create the new attribute. 
+Let's write the schema required to create the new attribute to a file so that
+it can be edited. 
 ```commandline
 /opt/jans/jans-cli/config-cli.py --schema JansAttribute > /tmp/attribute.json
 ```  
@@ -356,50 +368,66 @@ The command above will store the schema in `/tmp/attribute.json` file as below:
 Now update the values as per your need in the file. 
 For more information on what are the permissible and valid values 
 for each key, refer the [schema definition](https://gluu.org/swagger-ui/?url=https://raw.githubusercontent.com/JanssenProject/jans/vreplace-janssen-version/jans-config-api/docs/jans-config-api-swagger.yaml#/Attribute/post-attributes) 
-in the Swagger specification of the configuration-api. After updating
+in the Swagger specification of the configuration-api. 
+
+In this example, the `/tmp/attribute.json` content is: 
+
+```json
+{
+  "name": "testAttribute",
+  "displayName": "testAttribute",
+  "description": "This is for example only",
+  "dataType": "numeric",
+  "editType": [
+    "manager"
+  ],
+  "viewType": [
+    "manager"
+  ]
+}
+```
+
+After updating
 the file, use it with `post-attribute` operation as shown below:
 
 ```bash
 /opt/jans/jans-cli/config-cli.py --operation-id post-attributes \
 --data /tmp/attribute.json
 ```
-It will create a new attribute into the Attribute list with updated `inum & dn`:
+It will create a new attribute and return a JSON response with details about
+the new attribute. The response would have `inum` and `dn` assigned
+to the attribute by the server:
 
 ```json
 {
-  "dn": "inum=0272b98e-0ead-43e9-94eb-4af9548af97d,ou=attributes,o=jans",
+  "dn": "inum=f2a8acd6-d206-4f2b-b9df-1c361e0e3354,ou=attributes,o=jans",
   "selected": false,
-  "inum": "0272b98e-0ead-43e9-94eb-4af9548af97d",
-  "nameIdType": "string",
+  "inum": "f2a8acd6-d206-4f2b-b9df-1c361e0e3354",
   "name": "testAttribute",
   "displayName": "testAttribute",
-  "description": "testAttribute",
-  "dataType": "certificate",
+  "description": "This is for example only",
+  "dataType": "numeric",
   "editType": [
     "manager"
   ],
   "viewType": [
-    "user"
+    "manager"
   ],
-  "usageType": [
-    "openid"
-  ],
-  "status": "inactive",
-  "scimCustomAttr": true,
-  "oxMultiValuedAttribute": true,
-  "jansHideOnDiscovery": true,
+  "oxMultiValuedAttribute": false,
   "custom": false,
-  "tooltip": "string",
+  "requred": false,
   "adminCanAccess": false,
   "adminCanView": false,
   "adminCanEdit": false,
-  "userCanAccess": true,
-  "userCanView": true,
-  "userCanEdit": false,
+  "userCanAccess": false,
+  "userCanView": false,
   "whitePagesCanView": false,
-  "baseDn": "inum=0272b98e-0ead-43e9-94eb-4af9548af97d,ou=attributes,o=jans"
+  "userCanEdit": false,
+  "baseDn": "inum=f2a8acd6-d206-4f2b-b9df-1c361e0e3354,ou=attributes,o=jans"
 }
 ```
+
+This confirms that the attribute(claim) has been created successfully.
 
 ### Updating an Attribute
 
@@ -687,21 +715,21 @@ In order to add a new claim, the database schema need to be altered to add
 a column in the `jansPerson` table. 
 
 Refer to the 
-[operations guide](../reference/database/pgsql-ops.md#establish-connection-to-jans-postgresql-server) for corresponding persistence type to understand
+[operations guide](../reference/database/pgsql-ops.md#establish-connection-to-jans-postgresql-server) to understand
 how to connect to the PostgreSQL persistence.
 
-If the new claim is `mynewclaim` then run
+If the new claim is `testAttribute` then run
 the SQL below to add a new column.
 
 ```text
-ALTER TABLE "jansPerson" ADD COLUMN mynewclaim integer;
+ALTER TABLE "jansPerson" ADD COLUMN testAttribute integer;
 ```
 
 It is also possible to specify additional constraints, defaults, or other 
 attributes for the new column as needed. Here's an example with a default value.
 
 ```text
-ALTER TABLE "jansPerson" ADD COLUMN mynewclaim VARCHAR DEFAULT 'Basic';
+ALTER TABLE "jansPerson" ADD COLUMN testAttribute integer DEFAULT 10;
 ```
 
 ### LDAP

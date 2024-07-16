@@ -23,7 +23,7 @@ On a Janssen Server instance, the `jans-cli` will be already installed.
 
 It can be invoked executing following command on Janssen Server.
 
-```shell
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py
 ```
 
@@ -35,7 +35,7 @@ remote server where Janssen Server is installed.
 - Follow [these instructions](../jans-tui/README.md#1-build-pyz-self-executable-file) and create a self-executable file
 - Run the file as shown in the example below to enter CLI mode. Here, supplying the argument `--no-tui` is necessary,
   otherwise it will switch to TUI mode.
-   ```
+   ```text
    $ ./jans-cli-tui.pyz --no-tui --host test.jans.io --client-id 2000.562981df-1623-4136-b1d0-aaa277edc48c --client-secret KU6ydImJZK6S --operation-id get-acrs
    Please wait while retrieving data ...
    Access token was not found.
@@ -58,7 +58,7 @@ This directory also contains SALT used by Janssen CLI tool.
 To run operations on Janssen Server, CLI client will need to be authenticated and authorized by the server. Since CLI has limited input capabilities, it uses [Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628) flow to get required permissions in form of an access token. After successfully receiving the token, CLI can run operations on the Janssen server while the token is valid. The steps below will summarize this process.
 
 1. Execution of CLI command will return the following message if a valid token is not found.
-   ```
+   ```text
    Access token was not found.
    Please visit verification url <Janssen-server-device-code-url> and enter user code CGFZ-RTZR in 1800 seconds
    Please press <<Enter>> when ready
@@ -74,30 +74,28 @@ To run operations on Janssen Server, CLI client will need to be authenticated an
 CLI `--help` switch prints all options available from CLI to configure Janssen
 Server. Run command below
 
-```shell
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py --help
 ```
 To see all options as below:
-```
-usage: config-cli.py [-h] [--host HOST] [--client-id CLIENT_ID]
-                     [--client_secret CLIENT_SECRET] [--plugins PLUGINS] [-debug]
-                     [--debug-log-file DEBUG_LOG_FILE]
-                     [--operation-id OPERATION_ID] [--url-suffix URL_SUFFIX]
-                     [--info {Attribute,CacheConfiguration,CacheConfigurationInMemory,CacheConfigurationMemcached,CacheConfigurationNativePersistence,CacheConfigurationRedis,ConfigurationFido2,ConfigurationJWKJSONWebKeyJWK,ConfigurationLogging,ConfigurationProperties,ConfigurationSMTP,CustomScripts,DatabaseCouchbaseConfiguration,DatabaseLDAPConfiguration,DefaultAuthenticationMethod,OAuthOpenIDConnectClients,OAuthScopes,OAuthUMAResources}]
-                     [--op-mode {get,post,put,patch,delete}]
-                     [--endpoint-args ENDPOINT_ARGS] [--schema SCHEMA]
-                     [--username USERNAME] [--password PASSWORD] [-j J]
-                     [--cert-file CERT_FILE] [--key-file KEY_FILE] [-noverify]
-                     [--patch-add PATCH_ADD] [--patch-replace PATCH_REPLACE]
-                     [--patch-remove PATCH_REMOVE] [--data DATA]
+```text
+usage: config-cli.py [-h] [--host HOST] [--client-id CLIENT_ID] [--client-secret CLIENT_SECRET] [--access-token ACCESS_TOKEN] [--plugins PLUGINS] [-debug]
+                     [--debug-log-file DEBUG_LOG_FILE] [--operation-id OPERATION_ID] [--url-suffix URL_SUFFIX]
+                     [--info {AdminUiConfiguration,AdminUiLicense,AdminUiPermission,AdminUiRole,AdminUiRolePermissionsMapping,AdminUiWebhooks,Agama,AgamaConfiguration,Attribute,AuthServerHealthCheck,AuthSessionManagement,CacheConfiguration,CacheConfigurationInMemory,CacheConfigurationMemcached,CacheConfigurationNativePersistence,CacheConfigurationRedis,ClientAuthorization,ConfigurationConfigApi,ConfigurationJwkJsonWebKeyJwk,ConfigurationLogging,ConfigurationProperties,ConfigurationSmtp,ConfigurationUserManagement,CustomScripts,DatabaseLdapConfiguration,DefaultAuthenticationMethod,Fido2Configuration,Fido2Registration,HealthCheck,JansAssets,JansLinkConfiguration,KcLinkConfiguration,LockConfiguration,MessageConfiguration,MessageConfigurationPostgres,MessageConfigurationRedis,OauthOpenidConnectClients,OauthScopes,OauthUmaResources,OrganizationConfiguration,Plugins,SamlConfiguration,SamlIdentityBroker,SamlTrustRelationship,ScimConfigManagement,StatisticsUser}]
+                     [--op-mode {get,post,put,patch,delete}] [--endpoint-args ENDPOINT_ARGS] [--schema-sample SCHEMA_SAMPLE] [--schema SCHEMA]
+                     [-CC CONFIG_API_MTLS_CLIENT_CERT] [-CK CONFIG_API_MTLS_CLIENT_KEY] [--key-password KEY_PASSWORD] [-noverify] [-use-test-client]
+                     [--patch-add PATCH_ADD] [--patch-replace PATCH_REPLACE] [--patch-remove PATCH_REMOVE] [-no-color] [--log-dir LOG_DIR] [--tmp-dir TMP_DIR]
+                     [-revoke-session] [-scim] [-auth] [--data DATA] [--output-access-token]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --host HOST           Hostname of server
   --client-id CLIENT_ID
                         Jans Config Api Client ID
-  --client_secret CLIENT_SECRET
+  --client-secret CLIENT_SECRET, --client_secret CLIENT_SECRET
                         Jans Config Api Client ID secret
+  --access-token ACCESS_TOKEN
+                        JWT access token or path to file containing JWT access token
   --plugins PLUGINS     Available plugins separated by comma
   -debug                Run in debug mode
   --debug-log-file DEBUG_LOG_FILE
@@ -105,35 +103,40 @@ optional arguments:
   --operation-id OPERATION_ID
                         Operation ID to be done
   --url-suffix URL_SUFFIX
-                        Argument to be added api endpoint url. For example
-                        inum:2B29
-  --info {Attribute,CacheConfiguration,CacheConfigurationInMemory,CacheConfigurationMemcached,CacheConfigurationNativePersistence,CacheConfigurationRedis,ConfigurationFido2,ConfigurationJWKJSONWebKeyJWK,ConfigurationLogging,ConfigurationProperties,ConfigurationSMTP,CustomScripts,DatabaseCouchbaseConfiguration,DatabaseLDAPConfiguration,DefaultAuthenticationMethod,OAuthOpenIDConnectClients,OAuthScopes,OAuthUMAResources}
+                        Argument to be added api endpoint url. For example inum:2B29
+  --info {AdminUiConfiguration,AdminUiLicense,AdminUiPermission,AdminUiRole,AdminUiRolePermissionsMapping,AdminUiWebhooks,Agama,AgamaConfiguration,Attribute,AuthServerHealthCheck,AuthSessionManagement,CacheConfiguration,CacheConfigurationInMemory,CacheConfigurationMemcached,CacheConfigurationNativePersistence,CacheConfigurationRedis,ClientAuthorization,ConfigurationConfigApi,ConfigurationJwkJsonWebKeyJwk,ConfigurationLogging,ConfigurationProperties,ConfigurationSmtp,ConfigurationUserManagement,CustomScripts,DatabaseLdapConfiguration,DefaultAuthenticationMethod,Fido2Configuration,Fido2Registration,HealthCheck,JansAssets,JansLinkConfiguration,KcLinkConfiguration,LockConfiguration,MessageConfiguration,MessageConfigurationPostgres,MessageConfigurationRedis,OauthOpenidConnectClients,OauthScopes,OauthUmaResources,OrganizationConfiguration,Plugins,SamlConfiguration,SamlIdentityBroker,SamlTrustRelationship,ScimConfigManagement,StatisticsUser}
                         Help for operation
   --op-mode {get,post,put,patch,delete}
                         Operation mode to be done
   --endpoint-args ENDPOINT_ARGS
-                        Arguments to pass endpoint separated by comma. For
-                        example limit:5,status:INACTIVE
-  --schema SCHEMA       Get sample json schema
-  --username USERNAME   Auth username
-  --password PASSWORD   Auth password
-  -j J                  Auth password file
-  --cert-file CERT_FILE
+                        Arguments to pass endpoint separated by comma. For example limit:5,status:INACTIVE
+  --schema-sample SCHEMA_SAMPLE
+                        Get sample json schema template
+  --schema SCHEMA       Get the operation schema which describes all the keys of the schema and its values in detail.
+  -CC CONFIG_API_MTLS_CLIENT_CERT, --config-api-mtls-client-cert CONFIG_API_MTLS_CLIENT_CERT
                         Path to SSL Certificate file
-  --key-file KEY_FILE   Path to SSL Key file
+  -CK CONFIG_API_MTLS_CLIENT_KEY, --config-api-mtls-client-key CONFIG_API_MTLS_CLIENT_KEY
+                        Path to SSL Key file
+  --key-password KEY_PASSWORD
+                        Password for SSL Key file
   -noverify             Ignore verifying the SSL certificate
+  -use-test-client      Use test client without device authorization
   --patch-add PATCH_ADD
-                        Colon delimited key:value pair for add patch
-                        operation. For example loggingLevel:DEBUG
+                        Colon delimited key:value pair for add patch operation. For example loggingLevel:DEBUG
   --patch-replace PATCH_REPLACE
-                        Colon delimited key:value pair for replace patch
-                        operation. For example loggingLevel:DEBUG
+                        Colon delimited key:value pair for replace patch operation. For example loggingLevel:DEBUG
   --patch-remove PATCH_REMOVE
-                        Key for remove patch operation. For example
-                        imgLocation
+                        Key for remove patch operation. For example imgLocation
+  -no-color             Do not colorize json dumps
+  --log-dir LOG_DIR     Log directory
+  --tmp-dir TMP_DIR     Directory for storing temporary files
+  -revoke-session       Revokes session
+  -scim                 SCIM Mode
+  -auth                 Jans OAuth Server Mode
   --data DATA           Path to json data file
-  --output-access-token Prints jwt access token and exits
-root@testjans:~# 
+  --output-access-token
+                        Prints jwt access token and exits
+
 ```
 
 ## CLI Command Structure
@@ -142,7 +145,7 @@ CLI operations are structurally grouped by `Operation Modes` and within
 these modes, they are logically grouped together by tasks. Diagram below 
 depicts this structure.
 
-![](../../../../assets/jans-cli-structure.png)
+![image](../../../../assets/jans-cli-structure.png)
 
 ### Operation Modes
 
@@ -150,7 +153,7 @@ CLI offer three operation modes, JCA, SCIM and AUTH. JCA is the default mode.
 To use SCIM and AUTH modes, the CLI command specifies `-scim` or `-auth` 
 switches. Use `-h` switch to get help on each mode.
 
-```shell
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py -scim -h
 ```
 
@@ -167,32 +170,33 @@ any operation on the server. Tasks can only be used with `--info` switch.
 
 Execute following command to see what all tasks are offered by jans-cli:
 
-```shell
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py --help
 ```
 
 Options listed for `--info` switch are tasks groups available. For example:
 
-```shell
-usage: config-cli.py [-h] [--host HOST] [--client-id CLIENT_ID] [--client-secret CLIENT_SECRET] [--access-token ACCESS_TOKEN] [--plugins PLUGINS]
-                     [-debug] [--debug-log-file DEBUG_LOG_FILE] [--operation-id OPERATION_ID] [--url-suffix URL_SUFFIX]
-                     [--info {AdminUiLicense,AdminUiPermission,AdminUiRole,AdminUiRolePermissionsMapping,AdminUiWebhooks,Agama,AgamaConfiguration,Attribute,AuthServerHealthCheck,AuthSessionManagement,CacheConfiguration,CacheConfigurationInMemory,CacheConfigurationMemcached,CacheConfigurationNativePersistence,CacheConfigurationRedis,ClientAuthorization,ConfigurationConfigApi,ConfigurationJwkJsonWebKeyJwk,ConfigurationLogging,ConfigurationProperties,ConfigurationSmtp,ConfigurationUserManagement,CustomScripts,DatabaseLdapConfiguration,DefaultAuthenticationMethod,Fido2Configuration,Fido2Registration,HealthCheck,JansLinkConfiguration,MessageConfiguration,MessageConfigurationPostgres,MessageConfigurationRedis,OauthOpenidConnectClients,OauthScopes,OauthUmaResources,OrganizationConfiguration,Plugins,SamlConfiguration,SamlIdentityBroker,SamlTrustRelationship,ScimConfigManagement,StatisticsUser}]
-                     [--op-mode {get,post,put,patch,delete}] [--endpoint-args ENDPOINT_ARGS] [--schema SCHEMA] [-CC CONFIG_API_MTLS_CLIENT_CERT]
-                     [-CK CONFIG_API_MTLS_CLIENT_KEY] [--key-password KEY_PASSWORD] [-noverify] [-use-test-client] [--patch-add PATCH_ADD]
-                     [--patch-replace PATCH_REPLACE] [--patch-remove PATCH_REMOVE] [-no-color] [--log-dir LOG_DIR] [--tmp-dir TMP_DIR]
+```bash
+usage: cousage: config-cli.py [-h] [--host HOST] [--client-id CLIENT_ID] [--client-secret CLIENT_SECRET] [--access-token ACCESS_TOKEN] [--plugins PLUGINS] [-debug]
+                     [--debug-log-file DEBUG_LOG_FILE] [--operation-id OPERATION_ID] [--url-suffix URL_SUFFIX]
+                     [--info {AdminUiConfiguration,AdminUiLicense,AdminUiPermission,AdminUiRole,AdminUiRolePermissionsMapping,AdminUiWebhooks,Agama,AgamaConfiguration,Attribute,AuthServerHealthCheck,AuthSessionManagement,CacheConfiguration,CacheConfigurationInMemory,CacheConfigurationMemcached,CacheConfigurationNativePersistence,CacheConfigurationRedis,ClientAuthorization,ConfigurationConfigApi,ConfigurationJwkJsonWebKeyJwk,ConfigurationLogging,ConfigurationProperties,ConfigurationSmtp,ConfigurationUserManagement,CustomScripts,DatabaseLdapConfiguration,DefaultAuthenticationMethod,Fido2Configuration,Fido2Registration,HealthCheck,JansAssets,JansLinkConfiguration,KcLinkConfiguration,LockConfiguration,MessageConfiguration,MessageConfigurationPostgres,MessageConfigurationRedis,OauthOpenidConnectClients,OauthScopes,OauthUmaResources,OrganizationConfiguration,Plugins,SamlConfiguration,SamlIdentityBroker,SamlTrustRelationship,ScimConfigManagement,StatisticsUser}]
+                     [--op-mode {get,post,put,patch,delete}] [--endpoint-args ENDPOINT_ARGS] [--schema-sample SCHEMA_SAMPLE] [--schema SCHEMA]
+                     [-CC CONFIG_API_MTLS_CLIENT_CERT] [-CK CONFIG_API_MTLS_CLIENT_KEY] [--key-password KEY_PASSWORD] [-noverify] [-use-test-client]
+                     [--patch-add PATCH_ADD] [--patch-replace PATCH_REPLACE] [--patch-remove PATCH_REMOVE] [-no-color] [--log-dir LOG_DIR] [--tmp-dir TMP_DIR]
                      [-revoke-session] [-scim] [-auth] [--data DATA] [--output-access-token]
+
 ```
 
 To see operation-id available under a task, execute the command below with
 the task name as an argument:
 
-```shell
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py --info Attribute
 ```
 
 Above will list all the operations under `Attribute` group.
 
-```shell
+```shell title="Sample Output"
 Operation ID: get-attributes
   Description: Gets a list of Jans attributes.
   Parameters:
@@ -222,6 +226,9 @@ Operation ID: patch-attributes-by-inum
   Parameters:
   inum: Attribute Id [string]
   Schema: Array of PatchRequest
+
+To get sample schema type /opt/jans/jans-cli/config-cli.py --schema-sample <schema>, for example /opt/jans/jans-cli/config-cli.py --schema-sample PatchRequest
+
 ```
 ### Operation-ids
 jans-cli's unit of work, or a command, is known as `operation-id`. Each
@@ -232,14 +239,13 @@ Server attributes`.
 To perform any operation, you have to run command line with the operation id. 
 For example:
 
-```shell
+```bash title="Command"
 /opt/jans/jans-cli/config-cli.py --operation-id get-acrs
 ```
 
 It returns:
 
-```text
-Getting access token for scope https://jans.io/oauth/config/acrs.readonly
+```json title="Sample Output"
 {
   "defaultAcr": "simple_password_auth"
 }
@@ -262,7 +268,6 @@ while `schema` allows JSON structured data to be passed to the operation.
 For examples of how operations can be used with parameters and schema, refer to
 [Attribute](../../auth-server-config//attribute-configuration.md). Read more about schema in [this
 detail section](#about-schemas).
-
 ## Basic command-line switches
 
 1. `-h` or `--help` to get all the formations of command line argument (ex; `/opt/jans/jans-cli/config-cli.py -h`)
@@ -287,10 +292,13 @@ When you examine this sample schema, you will see three properties in an object:
 
 ### Multiple Patch Request (schema)
 
-When we need to perform multiple patch operations on any configuration endpoint, Instead of doing one by one, we can create a json file including all individual operation into an array. To clarify, please see below json file:
+When we need to perform multiple patch operations on any 
+configuration endpoint, Instead of doing one by one, we can create 
+a json file including all individual operation into an array. 
+To clarify, please see below json file:
 
 
-```
+```text
 [
     {
         "op": "operation-name",
@@ -318,17 +326,20 @@ When we need to perform multiple patch operations on any configuration endpoint,
 ]
 ```
 
-This file contains multiple individual patch operation. In [Patch Request (schema)](README.md#patch-request-schema) we explained about each of these keys in the above json file.
+This file contains multiple individual patch operation. In [Patch Request (schema)](README.md#patch-request-schema) 
+we explained about each of these keys in the above json file.
 
 After creating the json file, just run the patch operation command.
 
-```
-/opt/jans/jans-cli/config-cli.py --operation-id [patch operation id name] --data [json file absolute url]
+```bash title="Sample Command"
+/opt/jans/jans-cli/config-cli.py --operation-id [patch operation id name] \
+--data [json file absolute url]
 ```
 
 ### Quick Patch Operations
 
-There is another patch request feature. It is a single line patch-request command line. It supports three types of operations:
+There is another patch request feature. It is a single 
+line patch-request command line. It supports three types of operations:
 
 - `patch-replace`: to replace value with new one.
 - `patch-add`: it will add value into the key path.
@@ -336,14 +347,16 @@ There is another patch request feature. It is a single line patch-request comman
 
 The command line looks like below:
 
-```
-/opt/jans/jans-cli/config-cli.py --operation-id [patch-operation-id] --[patch-operation-name] key:value
+```bash title="Sample Command"
+/opt/jans/jans-cli/config-cli.py --operation-id [patch-operation-id] \
+--[patch-operation-name] key:value
 ```
 
 for example:
 
-```
-/opt/jans/jans-cli/config-cli.py --operation-id patch-config-cache --patch-replace memcachedConfiguration/bufferSize:32788
+```bash title="Command"
+/opt/jans/jans-cli/config-cli.py --operation-id patch-config-cache\
+ --patch-replace memcachedConfiguration/bufferSize:32788
 ```
 
 In this command line:
@@ -352,8 +365,10 @@ In this command line:
 - `memcachedConfiguration/bufferSize:32788` is a `key:value` pair
 
 Multi valued arguments can be privede as `key:value1,key:vlaue2`, for example 
-```
-/opt/jans/jans-cli/config-cli.py --operation-id=get-config-scripts  --endpoint-args="fieldValuePair:scriptType=dynamic_scope,fieldValuePair:level=100"
+
+```bash title="Command"
+/opt/jans/jans-cli/config-cli.py --operation-id=get-config-scripts\
+--endpoint-args="fieldValuePair:scriptType=dynamic_scope,fieldValuePair:level=100"
 ```
 
 

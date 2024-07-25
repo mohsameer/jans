@@ -17,7 +17,7 @@ Before you install, check the [VM system requirements](vm-requirements.md).
 
 - Download the GPG key zip file , unzip and import GPG key
 
-```shell
+```shell title='Command'
 wget https://github.com/JanssenProject/jans/files/11814522/automation-jans-public-gpg.zip
 ```
 

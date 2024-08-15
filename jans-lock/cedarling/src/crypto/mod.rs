@@ -15,7 +15,7 @@ pub static SUPPORTED_ALGORITHMS: OnceLock<Vec<jsonwebtoken::Algorithm>> = OnceLo
 // Trust Store, iss -> { config: OAuthConfig, jwks: JsonWebKeySet }
 pub static mut TRUST_STORE: OnceLock<BTreeMap<String, types::TrustStoreEntry>> = OnceLock::new();
 
-pub fn init(config: &startup::types::CedarlingConfig, trusted_issuers: BTreeMap<String, types::TrustedIssuer>) {
+pub fn init(config: &startup::types::CedarlingConfig, trusted_issuers: Vec<types::TrustedIssuer>) {
 	decode::JWT_VALIDATION_ENABLED.set(config.jwt_validation).expect_throw("JWT_VALIDATION_ENABLED already initialized");
 	unsafe { TRUST_STORE.set(Default::default()).expect_throw("TRUST_STORE already initialized") };
 
@@ -23,17 +23,8 @@ pub fn init(config: &startup::types::CedarlingConfig, trusted_issuers: BTreeMap<
 	let supported = config.supported_signature_algorithms.iter().map(|s| jsonwebtoken::Algorithm::from_str(s).unwrap_throw()).collect();
 	SUPPORTED_ALGORITHMS.set(supported).expect_throw("SUPPORTED_ALGORITHMS already initialized");
 
-	// insert id into issuer for token creation, map to Vector for easy sequential iteration
-	let issuers = trusted_issuers
-		.into_iter()
-		.map(|(name, mut issuer)| {
-			issuer.name = Some(name);
-			issuer
-		})
-		.collect();
-
 	// Init trust store
-	init_trust_store(config.trust_store_refresh_rate, issuers)
+	init_trust_store(config.trust_store_refresh_rate, trusted_issuers)
 }
 
 // A list of TrustedIssuers configured once during startup

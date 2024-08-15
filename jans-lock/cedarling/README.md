@@ -104,9 +104,10 @@ The `remote` and `lock-master` startup strategies share a similar format, docume
 		"b34fce229be0629e1e17baca42fbfe3621b70540598c": "pb25QaG90bzk0LmpwZyIKKTs=",
 		"kaushd787aosd90aspd908i123j1238okjl1iop245up": "cGVybWl0KAogICAgcHJpbmNpcGFsIGluIFVzZXI6OiJhbGljZSIsIAogICAgYWN0aW90X2lwID09ICIyMjIuMjIyLjIyMi4yMjIiCn07",
 	},
-	// trustedIssuers is also a dictionary that contains a list of Trusted Issuers, IDPs known by the cedarling
-	"trustedIssuers": {
-		"<IDP_NAME>": {
+	// trustedIssuers is also an array of IDPs known by the cedarling
+	"trustedIssuers": [
+		{
+			"name": "<IDP_NAME>",
 			"description": "<DESCRIPTION>",
 			"openidConfigurationEndpoint": "https://accounts.google.com/.well-known/openid-configuration",
 
@@ -123,7 +124,7 @@ The `remote` and `lock-master` startup strategies share a similar format, docume
 				"roleMapping": "role"
 			}
 		}
-	},
+	],
 	// schema is a base64 encoded cedar schema, in human readable format
 	"schema": "h23GV5ybWl0KAogICAgcHJpbmNpcGFsIGluIFVzZXI6OiJhbGljZSIsIAogICAgYWN0aW90X2lwID09ICIyMjIuMjIyLjIyMi4yMjIiCn07==",
 }

@@ -23,7 +23,8 @@ pub struct TrustStoreEntry {
 #[derive(serde::Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TrustedIssuer {
-	pub name: Option<String>,
+	pub name: String,
+	pub description: String,
 	pub openid_configuration_endpoint: String,
 
 	pub access_tokens: AccessTokenConfig,

@@ -1,4 +1,4 @@
-use std::{borrow::Cow, collections::BTreeMap, sync::OnceLock};
+use std::{borrow::Cow, sync::OnceLock};
 
 use cedar_policy::*;
 use wasm_bindgen::prelude::*;
@@ -17,7 +17,7 @@ pub async fn init(config: &mut types::CedarlingConfig) {
 	crypto::init(config, trusted_issuers);
 }
 
-pub async fn init_policy_store(config: &mut types::CedarlingConfig) -> BTreeMap<String, crypto::types::TrustedIssuer> {
+pub async fn init_policy_store(config: &mut types::CedarlingConfig) -> Vec<crypto::types::TrustedIssuer> {
 	// Get PolicyStore JSON
 	let policy_store: types::PolicyStoreEntry = match &config.policy_store {
 		#[cfg(feature = "direct_startup_strategy")]

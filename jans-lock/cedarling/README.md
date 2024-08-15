@@ -56,6 +56,28 @@ await setup();
 // ... use cedarling functions here
 ```
 
+### Special Instructions for the NodeJS 🟩
+
+There is no prelude required at runtime for NodeJS, but the `cedarling` must be built with the correct flags set.
+
+```bash
+# `--features direct_startup_strategy` enables sending in the policy store directly from JS, useful for testing
+cargo build --release --target wasm32-unknown-unknown --features direct_startup_strategy
+
+# Note --target nodejs
+wasm-bindgen --target nodejs --out-dir out ./target/wasm32-unknown-unknown/release/cedarling.wasm
+```
+
+The cedarling can now be used directly, via:
+
+```js
+// CommonJS import
+const { init, authz } = require("../out/cedarling.js");
+
+// As an ES6 Module
+import { init, authz } from "../out/cedarling.js"
+```
+
 ### Testing 🧪
 
 To test, you'll need Node.js installed. First, build the cedarling by running:

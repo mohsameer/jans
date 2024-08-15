@@ -11,7 +11,6 @@ pub mod types;
 
 pub static SCHEMA: OnceLock<Schema> = OnceLock::new();
 pub static POLICY_SET: OnceLock<PolicySet> = OnceLock::new();
-pub static DEFAULT_ENTITIES: OnceLock<serde_json::Value> = OnceLock::new();
 
 pub async fn init(config: &mut types::CedarlingConfig) {
 	let trusted_issuers = init_policy_store(config).await;
@@ -20,7 +19,7 @@ pub async fn init(config: &mut types::CedarlingConfig) {
 
 pub async fn init_policy_store(config: &mut types::CedarlingConfig) -> BTreeMap<String, crypto::types::TrustedIssuer> {
 	// Get PolicyStore JSON
-	let mut policy_store: types::PolicyStoreEntry = match &mut config.policy_store {
+	let policy_store: types::PolicyStoreEntry = match &config.policy_store {
 		#[cfg(feature = "direct_startup_strategy")]
 		types::PolicyStoreConfig::Direct { value } => serde_json::from_value(value.take()).unwrap_throw(),
 		types::PolicyStoreConfig::Local { id } => {
@@ -53,10 +52,6 @@ pub async fn init_policy_store(config: &mut types::CedarlingConfig) -> BTreeMap<
 	// Persist PolicyStore data
 	SCHEMA.set(policy_store.schema).expect_throw("SCHEMA already initialized");
 	POLICY_SET.set(policy_store.policies).expect_throw("POLICY_SET already initialized");
-
-	if let Some(entities) = policy_store.default_entities.take() {
-		DEFAULT_ENTITIES.set(entities).expect_throw("DEFAULT_ENTITIES already initialized");
-	}
 
 	policy_store.trusted_issuers
 }

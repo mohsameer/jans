@@ -52,7 +52,7 @@ pub async fn authz(req: JsValue) -> JsValue {
 
 	// evaluate query
 	let mut ctx = Default::default();
-	let answer = statement::evaluate(statement, &uids, &entities, &input, &mut ctx);
+	let answer = statement::evaluate(&statement, &uids, &entities, &input, &mut ctx);
 
 	to_value(&serde_json::json!({ "decision": answer, "policies": ctx.policies })).unwrap_throw()
 }

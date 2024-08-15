@@ -57,7 +57,6 @@ pub struct PolicyStoreEntry {
 	pub trusted_issuers: BTreeMap<String, crypto::types::TrustedIssuer>,
 	#[serde(deserialize_with = "parse_policies")]
 	pub policies: cedar_policy::PolicySet,
-	pub default_entities: Option<serde_json::Value>,
 }
 
 #[inline(always)]

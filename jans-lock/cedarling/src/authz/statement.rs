@@ -1,21 +1,21 @@
-use std::collections::BTreeSet;
+use std::{borrow::Cow, collections::BTreeSet};
 
 use crate::startup;
 use wasm_bindgen::{throw_str, JsValue, UnwrapThrowExt};
 use web_sys::*;
 
 #[repr(u8)]
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub enum Binding {
 	Client,
 	Application,
 	User,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Statement {
 	Binding(Binding),
-	Operation(fn(&[cedar_policy::Decision]) -> cedar_policy::Decision, Vec<Statement>),
+	Operation(fn(&[cedar_policy::Decision]) -> cedar_policy::Decision, Cow<'static, [Statement]>),
 }
 
 // supported tokens: Client, Application, User, !, |, &, (, )
@@ -32,9 +32,20 @@ pub fn parse(tokens: &str) -> Statement {
 
 		// TODO: enable !Client pattern
 		match slice {
-			"Client" => statements.push(Statement::Binding(Binding::Client)),
-			"Application" => statements.push(Statement::Binding(Binding::Application)),
-			"User" => statements.push(Statement::Binding(Binding::User)),
+			// ! is a unary operation
+			"User" | "Application" | "Client" if o_stack.last().map(|f| *f as usize) == Some(operators::not as usize) => match slice {
+				"User" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::User)]))),
+				"Application" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::Application)]))),
+				"Client" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::Client)]))),
+				_ => unreachable!(),
+			},
+			"User" | "Application" | "Client" => match slice {
+				"User" => statements.push(Statement::Binding(Binding::User)),
+				"Application" => statements.push(Statement::Binding(Binding::Application)),
+				"Client" => statements.push(Statement::Binding(Binding::Client)),
+				_ => unreachable!(),
+			},
+
 			"!" => o_stack.push(operators::not),
 			"|" => o_stack.push(operators::any),
 			"&" => o_stack.push(operators::all),
@@ -77,7 +88,7 @@ mod operators {
 
 	// !
 	pub fn not(input: &[cedar_policy::Decision]) -> cedar_policy::Decision {
-		match input.first().expect_throw("`!` operation expects at least one input") {
+		match input.first().expect_throw("`!` operation takes one input") {
 			cedar_policy::Decision::Allow => cedar_policy::Decision::Deny,
 			cedar_policy::Decision::Deny => cedar_policy::Decision::Allow,
 		}
@@ -110,7 +121,7 @@ pub struct ExecCtx {
 
 pub fn evaluate(
 	// Lord have mercy on the number of parameters this takes
-	statement: Statement,
+	statement: &Statement,
 	uids: &super::types::EntityUids,
 	entities: &cedar_policy::Entities,
 	input: &(cedar_policy::EntityUid, cedar_policy::EntityUid, cedar_policy::Context),

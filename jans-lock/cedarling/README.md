@@ -95,7 +95,52 @@ node tests/main.mjs local
 
 ### Policy Store Format 📐
 
-The base policy store format can be read in the `policy-store/remote.json` file. The format changes when the local strategy is used, as several entries can be used. Thus `policy-store/local.json` contains an Object with several entries differentiated by their ID's.
+The `remote` and `lock-master` startup strategies share a similar format, documented below:
+
+```jsonc
+{
+	// policies is a dictionary that maps PolicyIDs to base64 encoded cedar policies
+	"policies": {
+		"b34fce229be0629e1e17baca42fbfe3621b70540598c": "pb25QaG90bzk0LmpwZyIKKTs=",
+		"kaushd787aosd90aspd908i123j1238okjl1iop245up": "cGVybWl0KAogICAgcHJpbmNpcGFsIGluIFVzZXI6OiJhbGljZSIsIAogICAgYWN0aW90X2lwID09ICIyMjIuMjIyLjIyMi4yMjIiCn07",
+	},
+	// trustedIssuers is also a dictionary that contains a list of Trusted Issuers, IDPs known by the cedarling
+	"trustedIssuers": {
+		"<IDP_NAME>": {
+			"description": "<DESCRIPTION>",
+			"openidConfigurationEndpoint": "https://accounts.google.com/.well-known/openid-configuration",
+
+			// Configures if this IDP can issue a specific token type, and how the token is handled by the cedarling during `authz`
+			"accessTokens": {
+				"trusted": true
+			},
+			"idTokens": {
+				"trusted": true,
+				"principalIdentifier": "email"
+			},
+			"userinfoTokens": {
+				"trusted": true,
+				"roleMapping": "role"
+			}
+		}
+	},
+	// schema is a base64 encoded cedar schema, in human readable format
+	"schema": "h23GV5ybWl0KAogICAgcHJpbmNpcGFsIGluIFVzZXI6OiJhbGljZSIsIAogICAgYWN0aW90X2lwID09ICIyMjIuMjIyLjIyMi4yMjIiCn07==",
+}
+```
+
+The `local` startup format is slightly different, as it stores multiple entries to be chosen from at runtime. It's a simple dictionary, mapping a PolicyStore ID to a `PolicyStoreEntry`, documented above. You can edit this file, under `policy-store/local.json` and it will be statically embedded into the `cedarling` at compile time:
+
+```jsonc
+{
+	"<POLICY_STORE_ID#1>": {
+		// PolicyStoreEntry
+	},
+	"<POLICY_STORE_ID#2>": {
+		// PolicyStoreEntry
+	},
+}
+```
 
 ### Usage 🔧
 
@@ -119,6 +164,7 @@ const config = {
 		// can be "local", "remote" or "lock-server",
 		// each strategy requires different parameters, see below
 		strategy: "local",
+		id: "fc2fee0253af46f3dce320484c42444ae0b24f7ec84a",
 	},
 	// if policy-store.json is compressed using deflate-zlib
 	decompressPolicyStore: false,
@@ -130,15 +176,16 @@ const config = {
 
 /// > config.policyStore options <
 
-// the "local" strategy is a fallback option. the cedarling will use a statically embedded policy store, located in `/policy-store/local.json`
+// the "local" strategy is a fallback option. the cedarling will use a statically embedded policy store, located in `/policy-store/local.json`. This policy store contains several entries, and one will have to be picked using `id`
 const local = {
-	strategy: "local"
+	strategy: "local",
+	id: "fc2fee0253af46f3dce320484c42444ae0b24f7ec84a",
 };
 
 // the "remote" strategy is only slightly more complex than "local", with the only difference being you provide a http `url` from which a simple GET request is used to acquire the Policy Store
 const remote = {
 	strategy: "remote",
-	url: "https://raw.githubusercontent.com/JanssenProject/jans/main/jans-lock/cedarling/policy-store/**remote**.json"
+	url: "https://raw.githubusercontent.com/JanssenProject/jans/main/jans-lock/cedarling/policy-store/remote.json"
 }
 
 // the "lock-server" strategy is a more complicated, authenticated strategy employing OAuth.

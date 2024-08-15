@@ -7,11 +7,6 @@ pub fn token2entities(input: &authz::types::AuthzInput) -> (types::EntityUids, c
 	let mut entities = cedar_policy::Entities::empty();
 	let schema = startup::SCHEMA.get();
 
-	// load default entities
-	if let Some(e) = startup::DEFAULT_ENTITIES.get() {
-		entities = entities.add_entities_from_json_value(e.clone(), schema).unwrap_throw();
-	}
-
 	// extract tokens
 	let id_token: types::IdToken = crypto::decode::decode_jwt(&input.id_token, crypto::types::TokenType::IdToken);
 	let access_token: types::AccessToken = crypto::decode::decode_jwt(&input.access_token, crypto::types::TokenType::AccessToken);

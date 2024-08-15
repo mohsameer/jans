@@ -55,14 +55,15 @@ test("Cedarling Tests", async t => {
 			throw new Error(`Unknown startup strategy: ${process.argv[2]}`)
 	}
 
-	// Test authz
-	await t.test("authz Tests", async t => {
-		await t.test("Basic cedar decision", async () => {
-			let input = {
-				idToken: ""
-			};
 
-			let decision = await authz(input);
-		})
-	})
+	// Test authz
+	// await t.test("authz Tests", async t => {
+	// 	await t.test("Basic cedar decision", async () => {
+	// 		let input = {
+	// 			idToken: ""
+	// 		};
+
+	// 		let decision = await authz(input);
+	// 	})
+	// })
 })

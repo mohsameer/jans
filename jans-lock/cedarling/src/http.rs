@@ -10,7 +10,7 @@ extern "C" {
 	pub fn fetch_with_request_and_init(input: &Request, init: &RequestInit) -> js_sys::Promise;
 }
 
-pub async fn get(url: &str, headers: &[(&str, &str)]) -> Option<Response> {
+pub async fn get(url: &str, headers: &[(&str, &str)]) -> Response {
 	let mut opts = RequestInit::new();
 	opts.method("GET");
 	opts.mode(RequestMode::Cors);
@@ -27,7 +27,7 @@ pub async fn get(url: &str, headers: &[(&str, &str)]) -> Option<Response> {
 	let res = JsFuture::from(fetch_with_request_and_init(&req, &opts)).await.unwrap_throw();
 
 	// check if return value is response
-	res.dyn_into::<Response>().ok()
+	res.dyn_into::<Response>().unwrap_throw()
 }
 
 #[allow(dead_code)]
@@ -39,7 +39,7 @@ pub enum PostBody<'a, T: serde::Serialize = ()> {
 	Bytes(Vec<u8>),
 }
 
-pub async fn post<'a, T: serde::Serialize>(url: &str, body: PostBody<'a, T>, headers: &[(&'a str, &'a str)]) -> Option<Response> {
+pub async fn post<'a, T: serde::Serialize>(url: &str, body: PostBody<'a, T>, headers: &[(&'a str, &'a str)]) -> Response {
 	let mut opts = RequestInit::new();
 	let h = Headers::new().unwrap_throw();
 
@@ -85,7 +85,7 @@ pub async fn post<'a, T: serde::Serialize>(url: &str, body: PostBody<'a, T>, hea
 	let res = JsFuture::from(fetch_with_request_and_init(&request, &opts)).await.unwrap_throw();
 
 	// check if return value is response
-	res.dyn_into::<Response>().ok()
+	res.dyn_into::<Response>().unwrap_throw()
 }
 
 pub trait ResponseEx {
@@ -95,24 +95,6 @@ pub trait ResponseEx {
 }
 
 impl ResponseEx for Response {
-	async fn into_json<T: serde::de::DeserializeOwned>(self) -> Option<T> {
-		let text = self.into_string().await?;
-		serde_json::from_str(&text).ok()
-	}
-
-	async fn into_string(self) -> Option<String> {
-		if self.ok() {
-			let text = JsFuture::from(self.text().ok()?).await.ok()?;
-			text.as_string()
-		} else {
-			let text = JsFuture::from(self.text().ok()?).await.ok()?;
-			let message = JsValue::from_str(format!("{}: {}", self.status_text(), text.as_string().unwrap_throw()).as_str());
-
-			console::error_1(&message);
-			None
-		}
-	}
-
 	async fn into_bytes(self) -> Option<Vec<u8>> {
 		if self.ok() {
 			let array = JsFuture::from(self.array_buffer().ok()?).await.ok()?;
@@ -125,5 +107,13 @@ impl ResponseEx for Response {
 			console::error_1(&message);
 			None
 		}
+	}
+
+	async fn into_string(self) -> Option<String> {
+		self.into_bytes().await.map(|b| String::from_utf8(b).unwrap_throw())
+	}
+
+	async fn into_json<T: serde::de::DeserializeOwned>(self) -> Option<T> {
+		self.into_string().await.map(|s| serde_json::from_str(&s).unwrap_throw())
 	}
 }

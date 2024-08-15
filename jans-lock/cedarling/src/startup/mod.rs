@@ -35,7 +35,7 @@ pub async fn init_policy_store(config: &mut types::CedarlingConfig) -> Vec<crypt
 			serde_json::from_value(entry).unwrap_throw()
 		}
 		types::PolicyStoreConfig::Remote { url } => {
-			let res = http::get(url, &[]).await.expect_throw("Unable fetch Policy Store");
+			let res = http::get(url, &[]).await;
 			let bytes = res.into_bytes().await.expect_throw("Can't convert Policy Store response to String");
 
 			// decompress if necessary

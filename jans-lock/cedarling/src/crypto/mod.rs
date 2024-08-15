@@ -36,8 +36,7 @@ fn init_trust_store(refresh_rate: Option<i32>, trusted_issuers: Vec<types::Trust
 	let refresh_trust_store = move || {
 		wasm_bindgen_futures::spawn_local(async move {
 			for issuer in TRUSTED_ISSUERS.get().expect_throw("TRUSTED_ISSUERS not initialized") {
-				let req = http::get(&issuer.openid_configuration_endpoint, &[]).await;
-				let res = req.expect_throw("Unable to get OpenID config for TrustedIssuer");
+				let res = http::get(&issuer.openid_configuration_endpoint, &[]).await;
 
 				let config = res
 					.into_json::<lock_master::types::OAuthConfig>()
@@ -45,16 +44,12 @@ fn init_trust_store(refresh_rate: Option<i32>, trusted_issuers: Vec<types::Trust
 					.expect_throw("Unable to parse OpenID config from TrustedIssuer");
 
 				// update JwkSet
-				let req = http::get(&config.jwks_uri, &[]).await;
-				let res = req.expect_throw("Unable to fetch jwks from trusted issuer");
-
-				let iss = config.issuer.clone();
-
+				let res = http::get(&config.jwks_uri, &[]).await;
 				let jwks = res.into_json().await.expect_throw("Unable to parse jwks from TrustedIssuer");
-				let entry = types::TrustStoreEntry { jwks, issuer };
 
 				let trust_store = unsafe { TRUST_STORE.get_mut().unwrap_throw() };
-				let _ = trust_store.insert(iss, entry);
+				let entry = types::TrustStoreEntry { jwks, issuer };
+				let _ = trust_store.insert(config.issuer.clone(), entry);
 			}
 		})
 	};

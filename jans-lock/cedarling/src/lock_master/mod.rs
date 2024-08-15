@@ -37,9 +37,8 @@ pub async fn init<'a, T: serde::de::DeserializeOwned>(policy_store_config: &Poli
 
 	// Get LockMasterConfig
 	let url = format!("{}/.well-known/lock-master-configuration", url);
-	let res = http::get(&url, &[]).await.expect_throw("Unable to fetch LockMasterConfig from URL");
+	let res = http::get(&url, &[]).await;
 	let lock_master_config: types::LockMasterConfig = res.into_json().await.unwrap_throw();
-
 
 	// init sse updates
 	if *enable_dynamic_configuration {
@@ -47,7 +46,7 @@ pub async fn init<'a, T: serde::de::DeserializeOwned>(policy_store_config: &Poli
 	}
 
 	// Get OAuthConfig
-	let res = http::get(&lock_master_config.oauth_as_well_known, &[]).await.expect_throw("Unable to fetch LockMasterConfig from URL");
+	let res = http::get(&lock_master_config.oauth_as_well_known, &[]).await;
 	let openid_config = res.into_json::<types::OAuthConfig>().await.unwrap_throw();
 	let iss = crypto::decode::get_issuer(ssa_jwt).expect_throw("SSA_JWT lacks `iss` field");
 
@@ -65,7 +64,7 @@ pub async fn init<'a, T: serde::de::DeserializeOwned>(policy_store_config: &Poli
 
 		// send
 		let url = openid_config.registration_endpoint.expect_throw("No registration endpoint found, issuer doesn't support DCR");
-		let res = http::post(&url, http::PostBody::Json(client_req), &[]).await.expect_throw("Unable to register client");
+		let res = http::post(&url, http::PostBody::Json(client_req), &[]).await;
 		res.into_json().await.expect_throw("Unable to parse client registration response")
 	};
 
@@ -86,10 +85,8 @@ pub async fn init<'a, T: serde::de::DeserializeOwned>(policy_store_config: &Poli
 		// send
 		let auth = format!("Basic {}", js_btoa(&token));
 		let headers = [("Authorization", auth.as_str())];
-		let res = http::post(&openid_config.token_endpoint, http::PostBody::Form(&grant), &headers)
-			.await
-			.expect_throw("Unable to get Access Token");
 
+		let res = http::post(&openid_config.token_endpoint, http::PostBody::Form(&grant), &headers).await;
 		res.into_json().await.expect_throw("Unable to parse Access Token Response")
 	};
 
@@ -97,7 +94,7 @@ pub async fn init<'a, T: serde::de::DeserializeOwned>(policy_store_config: &Poli
 		let url = format!("{}?policy_store_format=json&policy_store_id={}", lock_master_config.config_uri, policy_store_id);
 		let auth = format!("Bearer {}", grant.access_token);
 
-		let res = http::get(&url, &[("Authorization", &auth)]).await.expect_throw("Unable to fetch policies from remote location");
+		let res = http::get(&url, &[("Authorization", &auth)]).await;
 		let buffer = res.into_bytes().await.expect_throw("Unable to convert response to bytes");
 
 		match decompress {

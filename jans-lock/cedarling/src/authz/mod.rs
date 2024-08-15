@@ -25,8 +25,7 @@ pub async fn authz(req: JsValue) -> JsValue {
 	let (uids, mut entities) = token2entity::token2entities(&input);
 
 	// append resource entity
-	let r = serde_json::json!([input.resource]);
-	entities = entities.add_entities_from_json_value(r, startup::SCHEMA.get()).unwrap_throw();
+	entities = entities.add_entities_from_json_value(serde_json::json!([input.resource]), startup::SCHEMA.get()).unwrap_throw();
 
 	// prepare request
 	let action = input.action.parse().expect_throw("Unable to parse action");

@@ -4,6 +4,8 @@ The `cedarling` is an embeddable Webassembly Component that runs a local Cedar E
 
 ### Setup 1️⃣
 
+> Follow the cedar tutorial [`here`](https://www.cedarpolicy.com/en/tutorial), before running the cedarling.
+
 Make sure you have [the Rust Toolchain](https://rustup.rs/), [`wasm-bindgen`](https://rustwasm.github.io/wasm-bindgen/reference/cli.html), [`clang`](https://clang.llvm.org/) and the `wasm32-unknown-unknown` Rust target triple installed. General setup follows the following flow:
 
 ```bash
@@ -210,15 +212,43 @@ init(config);
 
 ### `authz` Usage
 
+The `authz` export is how you send requests to the cedarling. `authz` runs a `cedar` decision under the hood, a `cedar` decision has 4 parts:
+ - The `principal`: The entity requesting access.
+ - The `action`: The action being requested.
+ - The `resource`: The resource being accessed.
+ - The `context`: Extra information provided to the cedar engine used by policies to facilitate decisions.
+
+`authz` generates several entities as described by the `schema` from it's input, runs the cedar-engine for these entities and aggregates the results into a single decision, using a lightweight DSL.
+
+The input of authz is described below:
+
 ```js
-// Cedarling Authorization Flow
+// the data provided below is for demonstration purposes only
 
-import { init, authz } from "cedarling.js"
-
-// Ensure the cedarling is initialized before calling authz
-init(..);
-
-// 🚧 (WIP)
+let input = {
+	// `statement`: a lightweight DSL used to aggregate decisions
+	statement: "&(User, Application)",
+	// `idToken`: an id_token JWT used to extract the `idTokenEntity` entity defined in the core cedarling schema
+	idToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+	// `userinfoToken`: used together with the `idToken` to generate the `User` and `userinfoTokenEntity` entities
+	userinfoToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+	// `accessToken`: used to generate the `Client` and `Application` entities
+	accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+	// `action`: Maps 1:1 to the `action` parameter in a cedar request, is expected to be an EntityUid
+	action: 'Delete::"Cache"',
+	// `resource`: An entity definition that is appended as is to the Entities list. The `resource` should respect the schema, and once appended it's UID is used as the `resource` parameter for any subsequent Cedar requests.
+	// The format follows 1:1 the JSON format for defining entities in cedar
+	resource: {
+		uid: { type: "User", id: "alice" },
+		attrs: {
+			age: 19,
+			ip_addr: { "__extn": { fn: "ip", arg: "10.0.1.101" } }
+		},
+		parents: [{ type: "Group", id: "admin" }]
+	},
+	// `context` An object used to pass additional information to the policy engine, maps 1:1 to the `context` parameter in a Cedar request
+	context: { type: "Context", id: "12345678" }
+}
 ```
 
 ### Lock Master SSE Interface 🚧

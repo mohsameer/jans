@@ -30,21 +30,25 @@ pub fn parse(tokens: &str) -> Statement {
 	for (index, _) in tokens.char_indices() {
 		let slice = tokens.get(start..=index).expect_throw("Overflow encountered during string slice");
 
-		// TODO: enable !Client pattern
 		match slice {
-			// ! is a unary operation
-			"User" | "Application" | "Client" if o_stack.last().map(|f| *f as usize) == Some(operators::not as usize) => match slice {
-				"User" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::User)]))),
-				"Application" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::Application)]))),
-				"Client" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::Client)]))),
-				_ => unreachable!(),
-			},
-			"User" | "Application" | "Client" => match slice {
-				"User" => statements.push(Statement::Binding(Binding::User)),
-				"Application" => statements.push(Statement::Binding(Binding::Application)),
-				"Client" => statements.push(Statement::Binding(Binding::Client)),
-				_ => unreachable!(),
-			},
+			"User" | "Application" | "Client" => {
+				// ! is a unary operation
+				if o_stack.last().map(|f| *f as usize) == Some(operators::not as usize) {
+					match slice {
+						"User" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::User)]))),
+						"Application" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::Application)]))),
+						"Client" => statements.push(Statement::Operation(operators::not, Cow::Borrowed(&[Statement::Binding(Binding::Client)]))),
+						_ => unreachable!(),
+					}
+				} else {
+					match slice {
+						"User" => statements.push(Statement::Binding(Binding::User)),
+						"Application" => statements.push(Statement::Binding(Binding::Application)),
+						"Client" => statements.push(Statement::Binding(Binding::Client)),
+						_ => unreachable!(),
+					}
+				}
+			}
 
 			"!" => o_stack.push(operators::not),
 			"|" => o_stack.push(operators::any),

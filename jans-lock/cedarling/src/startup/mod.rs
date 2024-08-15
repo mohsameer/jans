@@ -19,7 +19,7 @@ pub async fn init(config: &mut types::CedarlingConfig) {
 
 pub async fn init_policy_store(config: &mut types::CedarlingConfig) -> Vec<crypto::types::TrustedIssuer> {
 	// Get PolicyStore JSON
-	let policy_store: types::PolicyStoreEntry = match &config.policy_store {
+	let policy_store: types::PolicyStoreEntry = match &mut config.policy_store {
 		#[cfg(feature = "direct_startup_strategy")]
 		types::PolicyStoreConfig::Direct { value } => serde_json::from_value(value.take()).unwrap_throw(),
 		types::PolicyStoreConfig::Local { id } => {

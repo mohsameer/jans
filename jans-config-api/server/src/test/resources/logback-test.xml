@@ -7,8 +7,8 @@
         </encoder>
     </appender>
   
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>target/karate.log</file>
+    <appender name="FILE" class="org.testng.logback.core.FileAppender">
+        <file>target/config-api-testng.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
